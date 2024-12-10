@@ -1,3 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Butcherman&family=Honk&display=swap");
+
+body {
+  /* Define the background image */
+  background-image: url("/public/tracker.jpg"),
+    /* Image from the public directory */
+      linear-gradient(
+        90deg,
+        rgba(131, 58, 180, 1) 0%,
+        rgba(253, 137, 29, 1) 50%,
+        rgba(252, 176, 69, 1) 100%
+      );
+
+  background-size: cover; /* Ensure the image covers the entire background */
+  background-position: center; /* Center the image */
+  background-blend-mode: luminosity; /* Blend the image with the gradient */
+  background-attachment: fixed; /* Keep the background fixed while scrolling */
+  margin: 0;
+  padding: 0;
+}
+
 .App {
   text-align: center;
 }
@@ -11,21 +32,6 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
