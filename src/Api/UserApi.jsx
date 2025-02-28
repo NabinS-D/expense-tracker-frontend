@@ -1,24 +1,28 @@
-import axios from "axios"
-const token = localStorage.getItem('authToken');
-const apiClient = axios.create({
-    baseURL: "http://127.0.0.1:2000",
-});
-export const storeUser = async () => {
-    try {
-        const response = await apiClient.post('/api/register')
-        console.log(response)
-    } catch (error) {
-        throw new Error("User creation failed" + error.message);
-    }
+import apiClient from "../services/apiClient";
 
-}
+export const storeUser = async (userData) => {
+  try {
+    const response = await apiClient.post("/api/register", userData);
+    return response;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        message: "User creation failed: " + error.message,
+      }
+    );
+  }
+};
 
 export const login = async (userDetails) => {
-    try {
-        const response = await apiClient.post('/api/login', { email: userDetails.email, password: userDetails.password })
-        return response
-    } catch (error) {
-        throw error.response.data
-    }
-
-}
+    console.log(userDetails);
+  try {
+    const response = await apiClient.post("/api/login", {
+      email: userDetails.email,
+      password: userDetails.password,
+    });
+    console.log(response)
+    return response;
+  } catch (error) {
+    throw error.response?.data || { message: "Login failed: " + error.message };
+  }
+};

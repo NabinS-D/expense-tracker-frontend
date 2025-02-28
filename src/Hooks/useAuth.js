@@ -1,15 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 export const useAuth = () => {
+    // Initialize state from localStorage just once
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        // Get initial state from localStorage
         return !!localStorage.getItem('authToken');
     });
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem('authToken');
-        setIsAuthenticated(!!storedToken); // Update state based on token presence
+    // Create login and logout functions that handle both state and localStorage
+    const login = useCallback((token) => {
+        localStorage.setItem('authToken', token);
+        setIsAuthenticated(true);
     }, []);
 
-    return { isAuthenticated, setIsAuthenticated };
+    const logout = useCallback(() => {
+        localStorage.removeItem('authToken');
+        setIsAuthenticated(false);
+    }, []);
+
+    return { 
+        isAuthenticated, 
+        setIsAuthenticated,
+        login, 
+        logout 
+    };
 };

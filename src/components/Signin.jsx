@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import { login } from "../Api/UserApi";
 import { FlashMessage } from "./FlashMessage";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Hooks/useAuth";
+import { useAuth, setIsAuthenticated } from "../Hooks/useAuth";
 
 export const Signin = () => {
   const [userDetails, setUserDetails] = useState({
@@ -14,9 +14,9 @@ export const Signin = () => {
     text: "",
     severity: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false); // State for handling submission process
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setIsAuthenticated } = useAuth(); // Use the authentication hook
+  const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const clearMessage = () => {
@@ -26,35 +26,77 @@ export const Signin = () => {
     });
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const response = await login(userDetails);
-      // console.log("API Response:", response.data);
-      if (response.status === 200) {
-        localStorage.setItem("authToken", response.data.token);
-        setMessage({
-          text: response.data.message,
-          severity: "success",
-        });
-
-        // Set authenticated state only if it's not already true
-
-        setIsAuthenticated(true);
-
-        navigate("/app/dashboard"); // Navigate without delay
-      }
-    } catch (error) {
-      console.error("Error logging in:", error.message);
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userDetails.email)) {
       setMessage({
-        text: error.message,
+        text: "Please enter a valid email address",
         severity: "error",
       });
-      navigate("/"); // Redirect to login page on error
-    } finally {
-      setIsSubmitting(false);
+      return false;
     }
+    if (userDetails.password.length < 6) {
+      setMessage({
+        text: "Password must be at least 6 characters",
+        severity: "error",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleForm = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    let isMounted = true; // For tracking component mount state
+
+    try {
+      const response = await login(userDetails);
+
+      if (isMounted) {
+        if (response.status === 200) {
+          // Use sessionStorage for better security or consider HTTP-only cookies
+          localStorage.setItem("authToken", response.data.token);
+
+          setMessage({
+            text: response.data.message || "Login successful!",
+            severity: "success",
+          });
+
+          setIsAuthenticated(true);
+          navigate("/app/dashboard");
+        }
+      }
+    } catch (error) {
+      if (isMounted) {
+        console.error("Error logging in:", error);
+
+        // Extract more meaningful error message from API response if available
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Login failed. Please try again.";
+
+        setMessage({
+          text: errorMessage,
+          severity: "error",
+        });
+        // No need to navigate on error - already on login page
+      }
+    } finally {
+      if (isMounted) {
+        setIsSubmitting(false);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+    };
   };
 
   function handleInput(e) {
