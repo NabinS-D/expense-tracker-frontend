@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import { login } from "../Api/UserApi";
 import { FlashMessage } from "./FlashMessage";
 import { useNavigate } from "react-router-dom";
-import { useAuth, setIsAuthenticated } from "../Hooks/useAuth";
+import { useAuth } from "../Hooks/useAuth";
 
 export const Signin = () => {
   const [userDetails, setUserDetails] = useState({
@@ -15,9 +15,15 @@ export const Signin = () => {
     severity: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const isMountedRef = useRef(true);
   const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const clearMessage = () => {
     setMessage({
@@ -53,16 +59,14 @@ export const Signin = () => {
     }
 
     setIsSubmitting(true);
-    let isMounted = true; // For tracking component mount state
 
     try {
       const response = await login(userDetails);
-
-      if (isMounted) {
+      
+      if (isMountedRef.current) {
         if (response.status === 200) {
-          // Use sessionStorage for better security or consider HTTP-only cookies
           localStorage.setItem("authToken", response.data.token);
-
+          
           setMessage({
             text: response.data.message || "Login successful!",
             severity: "success",
@@ -73,10 +77,7 @@ export const Signin = () => {
         }
       }
     } catch (error) {
-      if (isMounted) {
-        console.error("Error logging in:", error);
-
-        // Extract more meaningful error message from API response if available
+      if (isMountedRef.current) {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
@@ -86,26 +87,21 @@ export const Signin = () => {
           text: errorMessage,
           severity: "error",
         });
-        // No need to navigate on error - already on login page
       }
     } finally {
-      if (isMounted) {
+      if (isMountedRef.current) {
         setIsSubmitting(false);
       }
     }
-
-    return () => {
-      isMounted = false;
-    };
   };
 
-  function handleInput(e) {
+  const handleInput = (e) => {
     const { name, value } = e.target;
     setUserDetails({
       ...userDetails,
       [name]: value,
     });
-  }
+  };
 
   return (
     <>
@@ -114,7 +110,7 @@ export const Signin = () => {
         align="center"
         gutterBottom
         sx={{
-          fontFamily: "'Honk', sans-serif", // Apply custom font here
+          fontFamily: "'Honk', sans-serif",
           fontSize: "60px",
         }}
       >
@@ -127,16 +123,13 @@ export const Signin = () => {
           padding: 3,
           borderRadius: 2,
           backgroundColor: "skyblue",
-          // 3D effect for border and box shadow
-          border: "0px solid #3f51b5", // Blue border for contrast
-          boxShadow:
-            "0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15)", // 3D shadow effect
-          transform: "translateY(-2px)", // Lifting effect
-          transition: "all 0.3s ease-in-out", // Smooth transition
+          border: "0px solid #3f51b5",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15)",
+          transform: "translateY(-2px)",
+          transition: "all 0.3s ease-in-out",
           "&:hover": {
-            transform: "translateY(-4px)", // Enhanced lifting effect on hover
-            boxShadow:
-              "0 8px 16px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.15)", // Stronger shadow on hover
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.15)",
           },
         }}
       >
@@ -154,6 +147,7 @@ export const Signin = () => {
             fullWidth
             required
             onChange={handleInput}
+            value={userDetails.email}
           />
 
           <TextField
@@ -166,6 +160,7 @@ export const Signin = () => {
             fullWidth
             required
             onChange={handleInput}
+            value={userDetails.password}
           />
 
           <Button
@@ -174,9 +169,9 @@ export const Signin = () => {
             type="submit"
             fullWidth
             sx={{ mt: 2 }}
-            disabled={isSubmitting} // Disable button while submitting
+            disabled={isSubmitting}
           >
-            {isSubmitting ? "Logging in..." : "Login"} {/* Show loading text */}
+            {isSubmitting ? "Logging in..." : "Login"}
           </Button>
         </form>
         <FlashMessage
