@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Use the correct environment variable syntax based on your build tool
 const API_URL = process.env.REACT_APP_API_URL;
-
+console.log("API Base URL:", API_URL);
 // Create axios instance with base URL
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -28,7 +28,6 @@ apiClient.interceptors.response.use(
       console.log("Unauthorized: Token expired or invalid");
       // You could redirect to login or clear tokens here
       localStorage.removeItem("authToken");
-      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
