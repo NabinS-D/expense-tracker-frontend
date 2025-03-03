@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import { storeUser } from "../Api/UserApi";
 import { FlashMessage } from "./FlashMessage";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Hooks/useAuth";
 
 export const SignUp = () => {
@@ -18,7 +17,6 @@ export const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isMountedRef = useRef(true);
   const { setIsAuthenticated } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     return () => {
@@ -140,7 +138,12 @@ export const SignUp = () => {
           },
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography
+          sx={{ fontFamily: "Rowdies, cursive" }}
+          variant="h4"
+          align="center"
+          gutterBottom
+        >
           Signup
         </Typography>
         <form onSubmit={handleForm}>
@@ -186,6 +189,7 @@ export const SignUp = () => {
             variant="contained"
             color="primary"
             type="submit"
+            className=" !bg-green-500 !text-white font-bold"
             fullWidth
             sx={{ mt: 2 }}
             disabled={isSubmitting}

@@ -135,7 +135,12 @@ export const Signin = () => {
           },
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography
+          sx={{ fontFamily: "Rowdies, cursive" }}
+          variant="h4"
+          align="center"
+          gutterBottom
+        >
           Login
         </Typography>
         <form onSubmit={handleForm}>
@@ -170,6 +175,7 @@ export const Signin = () => {
             color="primary"
             type="submit"
             fullWidth
+            className=" !bg-green-500 !text-white font-bold"
             sx={{ mt: 2 }}
             disabled={isSubmitting}
           >
@@ -181,7 +187,8 @@ export const Signin = () => {
             href="/register"
             className="text-blue-500 hover:focus-visible: font-bold"
           >
-            Don't have an account? <span className="text-fuchsia-500">Sign Up</span>
+            Don't have an account?{" "}
+            <span className="text-fuchsia-500">Sign Up</span>
           </a>
         </div>
 
