@@ -10,11 +10,16 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Dashboard } from "./Pages/Dashboard";
 import { LoadingProvider } from "./Context/LoadingContext";
 import "./App.css";
+import { SignUp } from "./components/SignUp";
 
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <Signin />,
+  },
+  {
+    path: "/register",
+    element: <SignUp />,
   },
   {
     path: "/",

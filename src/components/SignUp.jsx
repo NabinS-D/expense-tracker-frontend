@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
-import { login } from "../Api/UserApi";
+import { storeUser } from "../Api/UserApi";
 import { FlashMessage } from "./FlashMessage";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Hooks/useAuth";
 
-export const Signin = () => {
+export const SignUp = () => {
   const [userDetails, setUserDetails] = useState({
+    name: "",
     email: "",
     password: "",
   });
@@ -48,6 +49,13 @@ export const Signin = () => {
       });
       return false;
     }
+    if (!userDetails.name) {
+      setMessage({
+        text: "Username cannot be empty.",
+        severity: "error",
+      });
+      return false;
+    }
     return true;
   };
 
@@ -61,19 +69,16 @@ export const Signin = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await login(userDetails);
+      const response = await storeUser(userDetails);
 
       if (isMountedRef.current) {
-        if (response.status === 200) {
-          localStorage.setItem("authToken", response.data.token);
-
+        if (response.status === 201) {
           setMessage({
-            text: response.data.message || "Login successful!",
+            text: response.data.message || "Signup successful!",
             severity: "success",
           });
 
           setIsAuthenticated(true);
-          navigate("/app/dashboard");
         }
       }
     } catch (error) {
@@ -81,7 +86,7 @@ export const Signin = () => {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          "Login failed. Please try again.";
+          "Sign up failed. Please try again.";
 
         setMessage({
           text: errorMessage,
@@ -136,9 +141,21 @@ export const Signin = () => {
         }}
       >
         <Typography variant="h4" align="center" gutterBottom>
-          Login
+          Signup
         </Typography>
         <form onSubmit={handleForm}>
+          <TextField
+            id="username"
+            label="Username"
+            variant="outlined"
+            name="name"
+            type="name"
+            margin="normal"
+            fullWidth
+            required
+            onChange={handleInput}
+            value={userDetails.name}
+          />
           <TextField
             id="email"
             label="Email"
@@ -173,15 +190,15 @@ export const Signin = () => {
             sx={{ mt: 2 }}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Logging in..." : "Login"}
+            {isSubmitting ? "Signing up..." : "Signup"}
           </Button>
         </form>
         <div className="flex justify-center mt-2">
           <a
-            href="/register"
+            href="/login"
             className="text-blue-500 hover:focus-visible: font-bold"
           >
-            Don't have an account? <span className="text-fuchsia-500">Sign Up</span>
+            Signed up? <span className="text-fuchsia-500">Go to login</span>
           </a>
         </div>
 
