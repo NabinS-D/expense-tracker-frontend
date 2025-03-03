@@ -14,7 +14,6 @@ export const storeUser = async (userData) => {
 };
 
 export const login = async (userDetails) => {
-    console.log(userDetails);
   try {
     const response = await apiClient.post("/api/login", {
       email: userDetails.email,
