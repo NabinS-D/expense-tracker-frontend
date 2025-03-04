@@ -11,19 +11,25 @@ import { Dashboard } from "./Pages/Dashboard";
 import { LoadingProvider } from "./Context/LoadingContext";
 import "./App.css";
 import { SignUp } from "./components/SignUp";
+import { PublicRoute } from "./components/PublicRoute";
 
 const router = createBrowserRouter([
   {
-    path: "/login",
-    element: <Signin />,
-  },
-  {
-    path: "/register",
-    element: <SignUp />,
-  },
-  {
-    path: "/",
-    element: <Signin />,
+    element: <PublicRoute />,
+    children: [
+      {
+        path: "/login",
+        element: <Signin />,
+      },
+      {
+        path: "/register",
+        element: <SignUp />,
+      },
+      {
+        path: "/",
+        element: <Signin />,
+      },
+    ],
   },
   {
     path: "/app",

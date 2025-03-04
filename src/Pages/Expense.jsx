@@ -164,7 +164,9 @@ export const Expense = () => {
           margin: "20px",
         }}
       >
-        <h1 style={{ margin: 0 }}>Expense Dashboard</h1>
+        <h1 style={{ margin: 0, fontFamily: "'Rowdies', sans-serif" }}>
+          Expense Dashboard
+        </h1>
         <Box sx={{ minWidth: 120 }}>
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-label">Category</InputLabel>

@@ -62,7 +62,12 @@ export const CategoryDetails = () => {
       {/* Display expenses in a table */}
       {!category?.expenses || category.expenses.length === 0 ? (
         <p
-          style={{ textAlign: "center", margin: "20px 0", fontWeight: "bold" }}
+          style={{
+            textAlign: "center",
+            margin: "20px 0",
+            fontWeight: "bold",
+            fontFamily: "'Rowdies', sans-serif",
+          }}
         >
           No expenses found for this category.
         </p>

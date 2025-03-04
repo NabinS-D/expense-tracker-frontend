@@ -180,7 +180,7 @@ export const Budget = () => {
           margin: "20px",
         }}
       >
-        <h1 style={{ margin: 0 }}>Budget Dashboard</h1>
+        <h1 style={{ margin: 0, fontFamily: "'Rowdies', sans-serif" }}>Budget Dashboard</h1>
         <Button variant="contained" color="primary" onClick={handleOpen}>
           Add Budget
         </Button>
