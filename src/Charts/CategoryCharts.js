@@ -11,7 +11,7 @@ import {
 } from "chart.js";
 import { Pie, Bar, Line } from "react-chartjs-2";
 
-// Register required Chart.js elements
+// Register required Chart.js elements and custom background plugin
 ChartJS.register(
   ArcElement,
   BarElement,
@@ -20,11 +20,20 @@ ChartJS.register(
   LinearScale,
   Tooltip,
   Legend,
-  PointElement
+  PointElement,
+  {
+    id: "background",
+    beforeDraw: (chart) => {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.fillStyle = "#ffffff"; // Match gradient end
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    },
+  }
 );
 
 export const CategoryCharts = ({ chartData }) => {
-  // Prepare data for Pie Chart
   const pieData = {
     labels: chartData.map((datum) => datum.x),
     datasets: [
@@ -50,32 +59,26 @@ export const CategoryCharts = ({ chartData }) => {
     ],
   };
 
-  // Pie Chart options with legend on the right and responsive settings
   const pieOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allow chart to fit container without enforcing aspect ratio
+    maintainAspectRatio: false,
     plugins: {
+      background: true,
       tooltip: {
         callbacks: {
-          label: function (context) {
-            return `${context.label}: ${context.raw}`;
-          },
+          label: (context) => `${context.label}: ${context.raw}`,
         },
       },
       legend: {
-        position: "right", // Moved to "right" to save vertical space
+        position: "right",
         labels: {
-          font: {
-            size: 14,
-            weight: "bold",
-          },
+          font: { size: 14, weight: "bold" },
           color: "black",
         },
       },
     },
   };
 
-  // Prepare data for Bar Chart
   const barData = {
     labels: chartData.map((datum) => datum.x),
     datasets: [
@@ -96,25 +99,17 @@ export const CategoryCharts = ({ chartData }) => {
     ],
   };
 
-  // Bar Chart options (unchanged)
   const barOptions = {
     responsive: true,
     plugins: {
+      background: true,
       legend: {
         display: true,
         position: "top",
-        labels: {
-          font: {
-            size: 14,
-            weight: "bold",
-          },
-          color: "black",
-        },
+        labels: { font: { size: 14, weight: "bold" }, color: "black" },
       },
       tooltip: {
-        callbacks: {
-          label: (context) => `Amount: ${context.raw}`,
-        },
+        callbacks: { label: (context) => `Amount: ${context.raw}` },
       },
     },
     scales: {
@@ -122,45 +117,22 @@ export const CategoryCharts = ({ chartData }) => {
         title: {
           display: true,
           text: "Categories",
-          font: {
-            weight: "bold",
-            size: 14,
-            family: "Arial",
-            color: "black",
-          },
+          font: { weight: "bold", size: 14, family: "Arial", color: "black" },
         },
-        ticks: {
-          font: {
-            weight: "bold",
-            size: 12,
-            color: "black",
-          },
-        },
+        ticks: { font: { weight: "bold", size: 12, color: "black" } },
       },
       y: {
         title: {
           display: true,
           text: "Total Amount",
-          font: {
-            weight: "bold",
-            size: 14,
-            family: "Arial",
-            color: "black",
-          },
+          font: { weight: "bold", size: 14, family: "Arial", color: "black" },
         },
-        ticks: {
-          font: {
-            weight: "bold",
-            size: 12,
-            color: "black",
-          },
-        },
+        ticks: { font: { weight: "bold", size: 12, color: "black" } },
         beginAtZero: true,
       },
     },
   };
 
-  // Prepare data for Line Chart
   const lineData = {
     labels: chartData.map((datum) => datum.year),
     datasets: [
@@ -176,26 +148,16 @@ export const CategoryCharts = ({ chartData }) => {
     ],
   };
 
-  // Line Chart options (unchanged)
   const lineOptions = {
     responsive: true,
     plugins: {
+      background: true,
       tooltip: {
-        callbacks: {
-          label: function (context) {
-            return `Total: ${context.raw}`;
-          },
-        },
+        callbacks: { label: (context) => `Total: ${context.raw}` },
       },
       legend: {
         position: "top",
-        labels: {
-          font: {
-            size: 14,
-            weight: "bold",
-          },
-          color: "black",
-        },
+        labels: { font: { size: 14, weight: "bold" }, color: "black" },
       },
     },
     scales: {
@@ -203,43 +165,22 @@ export const CategoryCharts = ({ chartData }) => {
         title: {
           display: true,
           text: "Year",
-          font: {
-            weight: "bold",
-            size: 14,
-            color: "black",
-          },
+          font: { weight: "bold", size: 14, color: "black" },
         },
-        ticks: {
-          font: {
-            weight: "bold",
-            size: 12,
-            color: "black",
-          },
-        },
+        ticks: { font: { weight: "bold", size: 12, color: "black" } },
       },
       y: {
         title: {
           display: true,
           text: "Total Amount",
-          font: {
-            weight: "bold",
-            size: 14,
-            color: "black",
-          },
+          font: { weight: "bold", size: 14, color: "black" },
         },
-        ticks: {
-          font: {
-            weight: "bold",
-            size: 12,
-            color: "black",
-          },
-        },
+        ticks: { font: { weight: "bold", size: 12, color: "black" } },
         beginAtZero: true,
       },
     },
   };
 
-  // Common chart container styles with flexbox
   const chartContainerStyle = {
     width: "48%",
     height: "400px",
@@ -248,8 +189,8 @@ export const CategoryCharts = ({ chartData }) => {
     padding: "20px",
     borderRadius: "10px",
     boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-    display: "flex", // Added flexbox
-    flexDirection: "column", // Stack title and chart vertically
+    display: "flex",
+    flexDirection: "column",
   };
 
   return (
@@ -263,7 +204,6 @@ export const CategoryCharts = ({ chartData }) => {
           gap: "20px",
         }}
       >
-        {/* Pie Chart with flex layout */}
         <div style={chartContainerStyle}>
           <h3
             style={{ fontWeight: "bold", color: "black", marginBottom: "10px" }}
@@ -271,13 +211,10 @@ export const CategoryCharts = ({ chartData }) => {
             Pie Chart
           </h3>
           <div style={{ flex: 1, position: "relative" }}>
-            {" "}
-            {/* Flex: 1 to take remaining space */}
             <Pie data={pieData} options={pieOptions} />
           </div>
         </div>
 
-        {/* Bar Chart */}
         <div style={chartContainerStyle}>
           <h3
             style={{ fontWeight: "bold", color: "black", marginBottom: "10px" }}
@@ -299,15 +236,9 @@ export const CategoryCharts = ({ chartData }) => {
           alignItems: "center",
         }}
       >
-        {/* Line Chart */}
         <div style={chartContainerStyle}>
           <h3
-            style={{
-              fontWeight: "bold",
-              color: "black",
-              marginBottom: "10px",
-              textAlign: "center",
-            }}
+            style={{ fontWeight: "bold", color: "black", marginBottom: "10px" }}
           >
             Line Chart (Expenses Trend)
           </h3>

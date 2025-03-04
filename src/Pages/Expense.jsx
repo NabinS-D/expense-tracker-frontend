@@ -60,6 +60,7 @@ export const Expense = () => {
     date: "",
   });
 
+  const [isAddingExpense, setisAddingExpense] = React.useState(false);
   const handleOpenEdit = (expense) => {
     setEditData({
       id: expense.id,
@@ -202,6 +203,8 @@ export const Expense = () => {
             setMessage={setMessage}
             refreshExpenses={getAllExpenses}
             categories={categories}
+            setisAddingExpense={setisAddingExpense}
+            isAddingExpense={isAddingExpense}
           />
         </ModalDialog>
 

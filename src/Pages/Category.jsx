@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Box, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
@@ -23,6 +24,8 @@ export const Category = () => {
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+
+  const [isAddingCategory, setisAddingCategory] = useState(false);
   const [editData, setEditData] = useState({
     id: "",
     name: "",
@@ -134,6 +137,8 @@ export const Category = () => {
             onClose={handleClose}
             setMessage={setMessage}
             refreshCategories={getCategories}
+            isAddingCategory={isAddingCategory}
+            setisAddingCategory={setisAddingCategory}
           />
         </ModalDialog>
 
