@@ -219,6 +219,8 @@ export const Expense = () => {
             refreshExpenses={getAllExpenses}
             categories={categories}
             editData={editData}
+            setisAddingExpense={setisAddingExpense}
+            isAddingExpense={isAddingExpense}
           />
         </ModalDialog>
 

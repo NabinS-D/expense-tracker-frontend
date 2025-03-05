@@ -7,8 +7,8 @@ export const AddCategoryForm = ({
   setMessage,
   refreshCategories,
   editData = null,
-  isAddingCategory,
-  setisAddingCategory,
+  isAddingOrEditingCategory,
+  setIsAddingOrEditingCategory,
 }) => {
   const [formData, setFormData] = useState({
     id: "",
@@ -30,7 +30,7 @@ export const AddCategoryForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form from refreshing page
-    setisAddingCategory(true);
+    setIsAddingOrEditingCategory(true);
     try {
       const response = editData
         ? await editCategory(formData)
@@ -49,7 +49,7 @@ export const AddCategoryForm = ({
         severity: "error",
       });
     } finally {
-      setisAddingCategory(false); // Re-enable the button after operation completes
+      setIsAddingOrEditingCategory(false); // Re-enable the button after operation completes
     }
   };
 
@@ -71,7 +71,7 @@ export const AddCategoryForm = ({
           color="primary"
           type="submit"
           style={{ marginTop: "10px" }}
-          disabled={isAddingCategory}
+          disabled={isAddingOrEditingCategory}
         >
           {editData ? "Edit" : "Save"}
         </Button>

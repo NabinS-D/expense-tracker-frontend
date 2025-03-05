@@ -25,7 +25,7 @@ export const Category = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [isAddingCategory, setisAddingCategory] = useState(false);
+  const [isAddingOrEditingCategory, setIsAddingOrEditingCategory] = useState(false);
   const [editData, setEditData] = useState({
     id: "",
     name: "",
@@ -137,8 +137,8 @@ export const Category = () => {
             onClose={handleClose}
             setMessage={setMessage}
             refreshCategories={getCategories}
-            isAddingCategory={isAddingCategory}
-            setisAddingCategory={setisAddingCategory}
+            isAddingOrEditingCategory={isAddingOrEditingCategory}
+            setIsAddingOrEditingCategory={setIsAddingOrEditingCategory}
           />
         </ModalDialog>
 
@@ -152,6 +152,8 @@ export const Category = () => {
             setMessage={setMessage}
             refreshCategories={getCategories}
             editData={editData}
+            isAddingOrEditingCategory={isAddingOrEditingCategory}
+            setIsAddingOrEditingCategory={setIsAddingOrEditingCategory}
           />
         </ModalDialog>
 
