@@ -13,13 +13,12 @@ export const storeUser = async (userData) => {
   }
 };
 
-export const login = async (userDetails) => {
+export const loginUser = async (userDetails) => {
   try {
     const response = await apiClient.post("/api/login", {
       email: userDetails.email,
       password: userDetails.password,
     });
-    console.log(response)
     return response;
   } catch (error) {
     throw error.response?.data || { message: "Login failed: " + error.message };

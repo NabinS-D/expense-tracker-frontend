@@ -14,6 +14,7 @@ import {
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion"; // Added for animations
 import { alpha } from "@mui/material/styles"; // Added this for the gradient opacity
+import { useAuth } from "../Hooks/useAuth";
 
 const drawerWidth = 260; // Slightly wider for better spacing
 const menuItems = [
@@ -25,11 +26,10 @@ const menuItems = [
 
 export const ResponsiveDrawer = () => {
   const location = useLocation();
-  console.log("ResponsiveDrawer: Rendering with location =", location.pathname);
-
+  const { user, logout } = useAuth();
   // Enhanced route titles with more descriptive names
   const routeTitles = {
-    "/app/dashboard": "Dashboard Overview",
+    "/app/dashboard": `Greetings ${user}!`,
     "/app/category": "Categories Management",
     "/app/expense": "Expense Tracking",
     "/app/budget": "Budget Planning",
@@ -39,7 +39,7 @@ export const ResponsiveDrawer = () => {
   const currentTitle = routeTitles[location.pathname] || "404 - Page Not Found";
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    logout();
     window.location.href = "/login";
   };
 
@@ -117,7 +117,23 @@ export const ResponsiveDrawer = () => {
             },
           }}
         >
-          <Box sx={{ p: 2, textAlign: "center" }}>
+          <Box
+            sx={{
+              p: 2,
+              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src="/NaaApp.png"
+              alt="FinancePro Logo"
+              style={{
+                height: 40,
+                marginRight: 10,
+              }}
+            />
             <Typography
               variant="h6"
               sx={{

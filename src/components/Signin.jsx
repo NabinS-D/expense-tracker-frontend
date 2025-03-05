@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
-import { login } from "../Api/UserApi";
+import { loginUser } from "../Api/UserApi";
 import { FlashMessage } from "./FlashMessage";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Hooks/useAuth";
@@ -16,7 +16,7 @@ export const Signin = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isMountedRef = useRef(true);
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,12 +61,11 @@ export const Signin = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await login(userDetails);
+      const response = await loginUser(userDetails);
 
       if (isMountedRef.current) {
         if (response.status === 200) {
-          localStorage.setItem("authToken", response.data.token);
-
+          login(response.data.token, response.data.user);
           setMessage({
             text: response.data.message || "Login successful!",
             severity: "success",

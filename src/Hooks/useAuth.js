@@ -1,26 +1,36 @@
 import { useState, useCallback } from "react";
 
 export const useAuth = () => {
-    // Initialize state from localStorage just once
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        return !!localStorage.getItem('authToken');
-    });
+  // Initialize state from localStorage just once
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem("authToken");
+  });
 
-    // Create login and logout functions that handle both state and localStorage
-    const login = useCallback((token) => {
-        localStorage.setItem('authToken', token);
-        setIsAuthenticated(true);
-    }, []);
+  const [user, setUser] = useState(() => {
+    return localStorage.getItem("user") || "User";
+  });
 
-    const logout = useCallback(() => {
-        localStorage.removeItem('authToken');
-        setIsAuthenticated(false);
-    }, []);
+  // Create login and logout functions that handle both state and localStorage
+  const login = useCallback((token, userData) => {
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("user", userData);
+    setIsAuthenticated(true);
+    setUser(userData);
+  }, []);
 
-    return { 
-        isAuthenticated, 
-        setIsAuthenticated,
-        login, 
-        logout 
-    };
+  const logout = useCallback(() => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    setIsAuthenticated(false);
+    setUser("User");
+  }, []);
+
+  return {
+    isAuthenticated,
+    setIsAuthenticated,
+    user,
+    setUser,
+    login,
+    logout,
+  };
 };
