@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -20,40 +20,29 @@ import Loading from "../components/Loading";
 
 export const Category = () => {
   const [categories, setCategories] = useState([]);
-  const { isLoading, setIsLoading } = useLoading(); // Access loading state from context
+  const { isLoading, setIsLoading } = useLoading();
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
   const [isAddingOrEditingCategory, setIsAddingOrEditingCategory] = useState(false);
-  const [editData, setEditData] = useState({
-    id: "",
-    name: "",
-  });
-  const [message, setMessage] = useState({
-    severity: "",
-    text: "",
-  });
+  const [editData, setEditData] = useState({ id: "", name: "" });
+  const [message, setMessage] = useState({ severity: "", text: "" });
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const handleOpenEdit = (category) => {
-    setEditData({
-      id: category.id,
-      name: category.name,
-    });
+    setEditData({ id: category.id, name: category.name });
     setOpenEdit(true);
   };
   const handleCloseEdit = () => {
-    setEditData({ name: "" });
+    setEditData({ id: "", name: "" });
     setOpenEdit(false);
   };
 
   const handleOpenDelete = (category) => {
-    setEditData({
-      id: category.id,
-    });
+    setEditData({ id: category.id });
     setOpenDelete(true);
   };
   const handleCloseDelete = () => {
@@ -62,15 +51,12 @@ export const Category = () => {
   };
 
   const clearMessage = () => {
-    setMessage({
-      severity: "",
-      text: "",
-    });
+    setMessage({ severity: "", text: "" });
   };
 
   const getCategories = async () => {
     try {
-      setIsLoading(true); // Hide loading spinner
+      setIsLoading(true);
       const response = await getCategory();
       if (response.status === 200) {
         setCategories(response.data);
@@ -78,7 +64,7 @@ export const Category = () => {
     } catch (error) {
       throw new Error(error.message);
     } finally {
-      setIsLoading(false); // Hide loading spinner
+      setIsLoading(false);
     }
   };
 
@@ -90,9 +76,14 @@ export const Category = () => {
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
       color: theme.palette.common.white,
+      fontSize: { xs: "0.75rem", sm: "0.9rem" },
+      padding: { xs: "8px", sm: "16px" },
+      textAlign: "center",
     },
     [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
+      fontSize: { xs: "0.7rem", sm: "0.875rem" },
+      padding: { xs: "6px", sm: "16px" },
+      textAlign: "center",
     },
   }));
 
@@ -106,127 +97,161 @@ export const Category = () => {
   }));
 
   if (isLoading) {
-    return <Loading />; // Show loading spinner if data is being fetched
+    return <Loading />;
   }
+
   return (
-    <TableContainer component={Paper}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, maxWidth: "1200px", mx: "auto" }}>
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
-          margin: "20px",
+          alignItems: { xs: "flex-start", sm: "center" },
+          mb: 2,
+          gap: { xs: 1, sm: 0 },
         }}
       >
-        <h1 style={{ margin: 0, fontFamily: "'Rowdies', sans-serif" }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontFamily: "'Rowdies', sans-serif",
+            fontSize: { xs: "1.5rem", sm: "2rem" },
+            m: 0,
+          }}
+        >
           Category Dashboard
-        </h1>
-        <Button variant="contained" color="primary" onClick={handleOpen}>
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpen}
+          size="small"
+          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+        >
           Add Category
         </Button>
-
-        <FlashMessage
-          severity={message.severity}
-          text={message.text}
-          clearMessage={clearMessage}
-        />
-
-        {/* Reusable Modal */}
-        <ModalDialog open={open} onClose={handleClose} title="Add Category">
-          <AddCategoryForm
-            onClose={handleClose}
-            setMessage={setMessage}
-            refreshCategories={getCategories}
-            isAddingOrEditingCategory={isAddingOrEditingCategory}
-            setIsAddingOrEditingCategory={setIsAddingOrEditingCategory}
-          />
-        </ModalDialog>
-
-        <ModalDialog
-          open={openEdit}
-          onClose={handleCloseEdit}
-          title="Edit Category"
-        >
-          <AddCategoryForm
-            onClose={handleCloseEdit}
-            setMessage={setMessage}
-            refreshCategories={getCategories}
-            editData={editData}
-            isAddingOrEditingCategory={isAddingOrEditingCategory}
-            setIsAddingOrEditingCategory={setIsAddingOrEditingCategory}
-          />
-        </ModalDialog>
-
-        <ModalDialog open={openDelete} onClose={handleCloseDelete} title="">
-          <DeleteForm
-            onClose={handleCloseDelete}
-            setMessage={setMessage}
-            refetch={getCategories}
-            title="Category"
-            deleteId={editData.id}
-          />
-        </ModalDialog>
       </Box>
 
+      <FlashMessage
+        severity={message.severity}
+        text={message.text}
+        clearMessage={clearMessage}
+      />
+
+      <ModalDialog open={open} onClose={handleClose} title="Add Category">
+        <AddCategoryForm
+          onClose={handleClose}
+          setMessage={setMessage}
+          refreshCategories={getCategories}
+          isAddingOrEditingCategory={isAddingOrEditingCategory}
+          setIsAddingOrEditingCategory={setIsAddingOrEditingCategory}
+        />
+      </ModalDialog>
+
+      <ModalDialog open={openEdit} onClose={handleCloseEdit} title="Edit Category">
+        <AddCategoryForm
+          onClose={handleCloseEdit}
+          setMessage={setMessage}
+          refreshCategories={getCategories}
+          editData={editData}
+          isAddingOrEditingCategory={isAddingOrEditingCategory}
+          setIsAddingOrEditingCategory={setIsAddingOrEditingCategory}
+        />
+      </ModalDialog>
+
+      <ModalDialog open={openDelete} onClose={handleCloseDelete} title="">
+        <DeleteForm
+          onClose={handleCloseDelete}
+          setMessage={setMessage}
+          refetch={getCategories}
+          title="Category"
+          deleteId={editData.id}
+        />
+      </ModalDialog>
+
       {categories.length === 0 ? (
-        <p
-          style={{ textAlign: "center", margin: "20px 0", fontWeight: "bold" }}
+        <Typography
+          sx={{
+            textAlign: "center",
+            my: 2,
+            fontWeight: "bold",
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+          }}
         >
           No Category found.
-        </p>
+        </Typography>
       ) : (
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">ID</StyledTableCell>
-              <StyledTableCell align="center">Category</StyledTableCell>
-              <StyledTableCell align="center">Created At</StyledTableCell>
-              <StyledTableCell align="center">Last Updated</StyledTableCell>
-              <StyledTableCell align="center">Action</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {categories.map((category) => (
-              <StyledTableRow key={category.id}>
-                <StyledTableCell align="center">{category.id}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <Link
-                    to="/app/category-details"
-                    state={{ category }}
-                    style={{ textDecoration: "none", color: "inherit" }} // Inline style to remove underline
-                  >
-                    {category.name}
-                  </Link>
+        <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+          <Table sx={{ minWidth: { xs: "auto", sm: 700 } }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>ID</StyledTableCell>
+                <StyledTableCell>Category</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Created At
                 </StyledTableCell>
-
-                <StyledTableCell align="center">
-                  {category.created_at}
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Last Updated
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  {category.updated_at}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginRight: "10px" }}
-                    onClick={() => handleOpenEdit(category)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleOpenDelete(category)}
-                  >
-                    Delete
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
+                <StyledTableCell>Action</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {categories.map((category) => (
+                <StyledTableRow key={category.id}>
+                  <StyledTableCell>{category.id}</StyledTableCell>
+                  <StyledTableCell>
+                    <Link
+                      to="/app/category-details"
+                      state={{ category }}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      {category.name}
+                    </Link>
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {category.created_at}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {category.updated_at}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        gap: { xs: 1, sm: 1 }, // Consistent gap for spacing
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleOpenEdit(category)}
+                        sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleOpenDelete(category)}
+                        sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </TableContainer>
+    </Box>
   );
 };

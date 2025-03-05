@@ -2,30 +2,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Rowdies:wght@300;400;700&display=swap');
 
 body {
-  /* Define the background image */
   background-image: url("/public/tracker.jpg"),
-    /* Image from the public directory */
-      linear-gradient(
-        90deg,
-        rgba(131, 58, 180, 1) 0%,
-        rgba(253, 137, 29, 1) 50%,
-        rgba(252, 176, 69, 1) 100%
-      );
-
-  background-size: cover; /* Ensure the image covers the entire background */
-  background-position: center; /* Center the image */
-  background-blend-mode: luminosity; /* Blend the image with the gradient */
-  background-attachment: fixed; /* Keep the background fixed while scrolling */
+    linear-gradient(
+      90deg,
+      rgba(131, 58, 180, 1) 0%,
+      rgba(253, 137, 29, 1) 50%,
+      rgba(252, 176, 69, 1) 100%
+    );
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: luminosity;
+  background-attachment: fixed;
   margin: 0;
   padding: 0;
+  min-height: 100vh; /* Ensure full height on mobile */
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  body {
+    background-size: contain; /* Fit image on smaller screens */
+    background-position: top; /* Prioritize top content visibility */
+  }
 }
 
 .App {
   text-align: center;
+  width: 100%;
+  max-width: 1200px; /* Limit width on large screens */
+  margin: 0 auto; /* Center content */
+  padding: 1rem; /* Add padding for mobile */
+  box-sizing: border-box;
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 40vmin; /* Scales with viewport */
   pointer-events: none;
 }
 
@@ -36,10 +47,13 @@ body {
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile-specific tweaks */
+@media (max-width: 480px) {
+  .App-logo {
+    height: 20vmin; /* Smaller logo on mobile */
   }
 }

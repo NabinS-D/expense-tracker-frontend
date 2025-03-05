@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { FlashMessage } from "../components/FlashMessage";
 import { ModalDialog } from "../components/ModalDialog";
 import { getBudget } from "../Api/BudgetApi";
@@ -21,10 +21,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
+    fontSize: { xs: "0.75rem", sm: "0.9rem" }, // Smaller on mobile
+    padding: { xs: "8px", sm: "16px" }, // Reduced padding on mobile
+    textAlign: "center",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    textAlign: "center", // Center text horizontally
+    fontSize: { xs: "0.7rem", sm: "0.875rem" }, // Adjust text size
+    padding: { xs: "6px", sm: "16px" }, // Reduced padding
+    textAlign: "center",
   },
 }));
 
@@ -32,7 +36,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // Hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
@@ -48,20 +51,14 @@ const initialEditData = {
 
 export const Budget = () => {
   const [budget, setBudget] = React.useState([]);
-  const { isLoading, setIsLoading } = useLoading(); // Access loading state from context
+  const { isLoading, setIsLoading } = useLoading();
   const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState({
-    text: "",
-    severity: "",
-  });
-
   const [openEdit, setOpenEdit] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [editData, setEditData] = React.useState(initialEditData);
-
+  const [message, setMessage] = React.useState({ text: "", severity: "" });
   const [categories, setCategories] = React.useState([]);
 
-  // Use useCallback to prevent recreating functions on each render
   const getBudgets = React.useCallback(async () => {
     let isMounted = true;
     try {
@@ -99,9 +96,7 @@ export const Budget = () => {
       if (isMounted) {
         setMessage({
           severity: "error",
-          text: `Error fetching categories: ${
-            error.message || "Unknown error"
-          }`,
+          text: `Error fetching categories: ${error.message || "Unknown error"}`,
         });
       }
     } finally {
@@ -113,6 +108,9 @@ export const Budget = () => {
       isMounted = false;
     };
   }, [setIsLoading]);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleOpenEdit = (budget) => {
     setEditData({
@@ -131,9 +129,7 @@ export const Budget = () => {
   };
 
   const handleOpenDelete = (budget) => {
-    setEditData({
-      id: budget.id,
-    });
+    setEditData({ id: budget.id });
     setOpenDelete(true);
   };
 
@@ -142,140 +138,159 @@ export const Budget = () => {
     setOpenDelete(false);
   };
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
   const clearMessage = () => {
-    setMessage({
-      severity: "",
-      text: "",
-    });
+    setMessage({ severity: "", text: "" });
   };
 
   React.useEffect(() => {
     const budgetCleanup = getBudgets();
     const categoriesCleanup = getCategories();
-
-    // Cleanup function to handle component unmounting
     return () => {
       budgetCleanup && typeof budgetCleanup === "function" && budgetCleanup();
-      categoriesCleanup &&
-        typeof categoriesCleanup === "function" &&
-        categoriesCleanup();
-      clearMessage(); // Clear any lingering messages on unmount
+      categoriesCleanup && typeof categoriesCleanup === "function" && categoriesCleanup();
+      clearMessage();
     };
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, [getBudgets, getCategories]);
 
   if (isLoading) {
     return <Loading />;
   }
 
   return (
-    <TableContainer component={Paper}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, maxWidth: "1200px", mx: "auto" }}>
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
-          margin: "20px",
+          alignItems: { xs: "flex-start", sm: "center" },
+          mb: 2,
+          gap: { xs: 1, sm: 0 },
         }}
       >
-        <h1 style={{ margin: 0, fontFamily: "'Rowdies', sans-serif" }}>Budget Dashboard</h1>
-        <Button variant="contained" color="primary" onClick={handleOpen}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontFamily: "'Rowdies', sans-serif",
+            fontSize: { xs: "1.5rem", sm: "2rem" },
+            m: 0,
+          }}
+        >
+          Budget Dashboard
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpen}
+          size="small"
+          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+        >
           Add Budget
         </Button>
-        <FlashMessage
-          severity={message.severity}
-          text={message.text}
-          clearMessage={clearMessage}
-        />
-
-        {/* Reusable Modal */}
-        <ModalDialog open={open} onClose={handleClose} title="Add Budget">
-          <AddBudgetForm
-            onClose={handleClose}
-            setMessage={setMessage}
-            refreshBudget={getBudgets}
-            categories={categories}
-          />
-        </ModalDialog>
-
-        <ModalDialog
-          open={openEdit}
-          onClose={handleCloseEdit}
-          title="Edit Budget"
-        >
-          <AddBudgetForm
-            onClose={handleCloseEdit}
-            setMessage={setMessage}
-            refreshBudget={getBudgets}
-            categories={categories}
-            editData={editData}
-          />
-        </ModalDialog>
-
-        <ModalDialog
-          open={openDelete}
-          onClose={handleCloseDelete}
-          title="Delete Budget"
-        >
-          <DeleteForm
-            onClose={handleCloseDelete}
-            setMessage={setMessage}
-            refetch={getBudgets}
-            title="Budget"
-            deleteId={editData.id}
-          />
-        </ModalDialog>
       </Box>
+
+      <FlashMessage
+        severity={message.severity}
+        text={message.text}
+        clearMessage={clearMessage}
+      />
+
+      <ModalDialog open={open} onClose={handleClose} title="Add Budget">
+        <AddBudgetForm
+          onClose={handleClose}
+          setMessage={setMessage}
+          refreshBudget={getBudgets}
+          categories={categories}
+        />
+      </ModalDialog>
+
+      <ModalDialog open={openEdit} onClose={handleCloseEdit} title="Edit Budget">
+        <AddBudgetForm
+          onClose={handleCloseEdit}
+          setMessage={setMessage}
+          refreshBudget={getBudgets}
+          categories={categories}
+          editData={editData}
+        />
+      </ModalDialog>
+
+      <ModalDialog open={openDelete} onClose={handleCloseDelete} title="Delete Budget">
+        <DeleteForm
+          onClose={handleCloseDelete}
+          setMessage={setMessage}
+          refetch={getBudgets}
+          title="Budget"
+          deleteId={editData.id}
+        />
+      </ModalDialog>
+
       {budget.length === 0 ? (
-        <p
-          style={{ textAlign: "center", margin: "20px 0", fontWeight: "bold" }}
+        <Typography
+          sx={{
+            textAlign: "center",
+            my: 2,
+            fontWeight: "bold",
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+          }}
         >
           No Budget found.
-        </p>
+        </Typography>
       ) : (
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">ID</StyledTableCell>
-              <StyledTableCell align="center">Category</StyledTableCell>
-              <StyledTableCell align="center">Budget</StyledTableCell>
-              <StyledTableCell align="center">Month</StyledTableCell>
-              <StyledTableCell align="center">Year</StyledTableCell>
-              <StyledTableCell align="center">Action</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {budget.map((b) => (
-              <StyledTableRow key={b.id}>
-                <StyledTableCell>{b.id}</StyledTableCell>
-                <StyledTableCell>{b.category.name}</StyledTableCell>
-                <StyledTableCell>{b.amount}</StyledTableCell>
-                <StyledTableCell>{b.month}</StyledTableCell>
-                <StyledTableCell>{b.year}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginRight: "10px" }}
-                    onClick={() => handleOpenEdit(b)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleOpenDelete(b)}
-                  >
-                    Delete
-                  </Button>
+        <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+          <Table sx={{ minWidth: { xs: "auto", sm: 700 } }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>ID</StyledTableCell>
+                <StyledTableCell>Category</StyledTableCell>
+                <StyledTableCell>Budget</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Month
                 </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Year
+                </StyledTableCell>
+                <StyledTableCell>Action</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {budget.map((b) => (
+                <StyledTableRow key={b.id}>
+                  <StyledTableCell>{b.id}</StyledTableCell>
+                  <StyledTableCell>{b.category.name}</StyledTableCell>
+                  <StyledTableCell>{b.amount}</StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {b.month}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {b.year}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleOpenEdit(b)}
+                      sx={{ mr: { xs: 0, sm: 1 }, mb: { xs: 1, sm: 0 }, fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleOpenDelete(b)}
+                      sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                    >
+                      Delete
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </TableContainer>
+    </Box>
   );
 };

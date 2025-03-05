@@ -1,108 +1,104 @@
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
+  Paper,
+  Typography,
 } from "@mui/material";
 import React, { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 export const CategoryDetails = () => {
   const location = useLocation();
-  const category = location.state?.category; // Access the passed category object
-  // Calculate total expenses
+  const category = location.state?.category;
+
   const { totalExpense, remainingBudget } = useMemo(() => {
     const totalExpense =
-      category?.expenses?.reduce(
-        (sum, expense) => sum + Number(expense.amount),
-        0
-      ) || 0;
-
-    const remainingBudget = category?.budget?.amount - totalExpense;
-
-    return { totalExpense, remainingBudget }; // Return both values as an object
+      category?.expenses?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
+    const remainingBudget = (category?.budget?.amount || 0) - totalExpense;
+    return { totalExpense, remainingBudget };
   }, [category?.expenses, category?.budget?.amount]);
 
   return (
     <Box
       sx={{
-        margin: "20px",
+        p: { xs: 1, sm: 2, md: 3 },
+        maxWidth: "1200px",
+        mx: "auto",
         backgroundColor: "white",
-        padding: "20px",
         borderRadius: "5px",
       }}
     >
-      {/* Inline header with space between */}
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: { xs: 1, sm: 2 },
+          mb: 2,
         }}
       >
-        <h2 style={{ margin: 0 }}>{category?.name}</h2>
-        <h3 style={{ margin: 0 }}>Budget : Rs {category?.budget?.amount}</h3>
-        <h3 style={{ margin: 0 }}>
-          Total Expenses : Rs {totalExpense.toFixed(2)}
-        </h3>
-        <h3
-          style={{
-            margin: 0,
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" }, m: 0 }}
+        >
+          {category?.name}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{ fontSize: { xs: "1rem", sm: "1.25rem" }, m: 0 }}
+        >
+          Budget: Rs {category?.budget?.amount || 0}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{ fontSize: { xs: "1rem", sm: "1.25rem" }, m: 0 }}
+        >
+          Total Expenses: Rs {totalExpense.toFixed(2)}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+            m: 0,
             color: remainingBudget < 0 ? "red" : "inherit",
           }}
         >
-          Remaining Budget : Rs {remainingBudget}
-        </h3>
+          Remaining Budget: Rs {remainingBudget.toFixed(2)}
+        </Typography>
       </Box>
-      <div>Created at: {category?.created_at}</div>
-      <br />
+      <Typography sx={{ fontSize: { xs: "0.875rem", sm: "1rem" }, mb: 2 }}>
+        Created at: {category?.created_at}
+      </Typography>
 
-      {/* Display expenses in a table */}
       {!category?.expenses || category.expenses.length === 0 ? (
-        <p
-          style={{
+        <Typography
+          sx={{
             textAlign: "center",
-            margin: "20px 0",
+            my: 2,
             fontWeight: "bold",
             fontFamily: "'Rowdies', sans-serif",
+            fontSize: { xs: "1rem", sm: "1.25rem" },
           }}
         >
           No expenses found for this category.
-        </p>
+        </Typography>
       ) : (
-        <Table>
-          <TableHead>
-            <TableRow
-              sx={{
-                backgroundColor: "black",
-                "& th": { color: "white" },
-              }}
-            >
-              <TableCell>
-                <strong>Description</strong>
-              </TableCell>
-              <TableCell align="center">
-                <strong>Created At</strong>
-              </TableCell>
-              <TableCell align="center">
-                <strong>Amount</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {category?.expenses?.map((expense, index) => (
-              <TableRow key={index}>
-                <TableCell>{expense.description || "N/A"}</TableCell>
-                <TableCell align="center">{expense.created_at}</TableCell>
-                <TableCell align="center">
-                  Rs {parseFloat(expense.amount).toFixed(2)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {category?.expenses?.map((expense, index) => (
+            <Paper key={index} sx={{ p: 2 }}>
+              <Typography sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+                Description: {expense.description || "N/A"}
+              </Typography>
+              <Typography sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+                Created At: {expense.created_at}
+              </Typography>
+              <Typography sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+                Amount: Rs {parseFloat(expense.amount).toFixed(2)}
+              </Typography>
+            </Paper>
+          ))}
+        </Box>
       )}
     </Box>
   );

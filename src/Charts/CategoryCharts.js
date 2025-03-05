@@ -10,8 +10,8 @@ import {
   PointElement,
 } from "chart.js";
 import { Pie, Bar, Line } from "react-chartjs-2";
+import { Box, Typography } from "@mui/material";
 
-// Register required Chart.js elements and custom background plugin
 ChartJS.register(
   ArcElement,
   BarElement,
@@ -26,7 +26,7 @@ ChartJS.register(
     beforeDraw: (chart) => {
       const { ctx } = chart;
       ctx.save();
-      ctx.fillStyle = "#ffffff"; // Match gradient end
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, chart.width, chart.height);
       ctx.restore();
     },
@@ -70,9 +70,9 @@ export const CategoryCharts = ({ chartData }) => {
         },
       },
       legend: {
-        position: "right",
+        position: "right", // Static position; responsiveness handled by container
         labels: {
-          font: { size: 14, weight: "bold" },
+          font: { size: 14, weight: "bold" }, // Static size, adjusted by container
           color: "black",
         },
       },
@@ -101,6 +101,7 @@ export const CategoryCharts = ({ chartData }) => {
 
   const barOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       background: true,
       legend: {
@@ -150,6 +151,7 @@ export const CategoryCharts = ({ chartData }) => {
 
   const lineOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       background: true,
       tooltip: {
@@ -181,72 +183,106 @@ export const CategoryCharts = ({ chartData }) => {
     },
   };
 
-  const chartContainerStyle = {
-    width: "48%",
-    height: "400px",
-    marginBottom: "30px",
-    background: "linear-gradient(to bottom, #e6f2ff, #ffffff)",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-    display: "flex",
-    flexDirection: "column",
-  };
-
   return (
-    <>
-      <div
-        style={{
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
+        flexWrap: "wrap",
+        justifyContent: "space-between",
+        gap: { xs: 2, sm: 3 },
+      }}
+    >
+      {/* Pie Chart */}
+      <Box
+        sx={{
+          width: { xs: "100%", sm: "48%" },
+          height: { xs: "300px", sm: "400px" },
+          background: "linear-gradient(to bottom, #e6f2ff, #ffffff)",
+          p: { xs: 1, sm: 2 },
+          borderRadius: "10px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
           display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: "20px",
+          flexDirection: "column",
         }}
       >
-        <div style={chartContainerStyle}>
-          <h3
-            style={{ fontWeight: "bold", color: "black", marginBottom: "10px" }}
-          >
-            Pie Chart
-          </h3>
-          <div style={{ flex: 1, position: "relative" }}>
-            <Pie data={pieData} options={pieOptions} />
-          </div>
-        </div>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            color: "black",
+            mb: 1,
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+            textAlign: "center",
+          }}
+        >
+          Pie Chart
+        </Typography>
+        <Box sx={{ flex: 1, position: "relative" }}>
+          <Pie data={pieData} options={pieOptions} />
+        </Box>
+      </Box>
 
-        <div style={chartContainerStyle}>
-          <h3
-            style={{ fontWeight: "bold", color: "black", marginBottom: "10px" }}
-          >
-            Bar Chart
-          </h3>
-          <div style={{ flex: 1, position: "relative" }}>
-            <Bar data={barData} options={barOptions} />
-          </div>
-        </div>
-      </div>
+      {/* Bar Chart */}
+      <Box
+        sx={{
+          width: { xs: "100%", sm: "48%" },
+          height: { xs: "300px", sm: "400px" },
+          background: "linear-gradient(to bottom, #e6f2ff, #ffffff)",
+          p: { xs: 1, sm: 2 },
+          borderRadius: "10px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            color: "black",
+            mb: 1,
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+            textAlign: "center",
+          }}
+        >
+          Bar Chart
+        </Typography>
+        <Box sx={{ flex: 1, position: "relative" }}>
+          <Bar data={barData} options={barOptions} />
+        </Box>
+      </Box>
 
-      <div
-        style={{
+      {/* Line Chart */}
+      <Box
+        sx={{
           width: "100%",
-          marginTop: "100px",
+          height: { xs: "300px", sm: "400px" },
+          background: "linear-gradient(to bottom, #e6f2ff, #ffffff)",
+          p: { xs: 1, sm: 2 },
+          borderRadius: "10px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          flexDirection: "column",
+          mt: { xs: 2, sm: 3 },
         }}
       >
-        <div style={chartContainerStyle}>
-          <h3
-            style={{ fontWeight: "bold", color: "black", marginBottom: "10px" }}
-          >
-            Line Chart (Expenses Trend)
-          </h3>
-          <div style={{ flex: 1, position: "relative" }}>
-            <Line data={lineData} options={lineOptions} />
-          </div>
-        </div>
-      </div>
-    </>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            color: "black",
+            mb: 1,
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+            textAlign: "center",
+          }}
+        >
+          Line Chart (Expenses Trend)
+        </Typography>
+        <Box sx={{ flex: 1, position: "relative" }}>
+          <Line data={lineData} options={lineOptions} />
+        </Box>
+      </Box>
+    </Box>
   );
 };

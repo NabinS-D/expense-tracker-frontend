@@ -15,6 +15,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
 import { FlashMessage } from "../components/FlashMessage";
 import { ModalDialog } from "../components/ModalDialog";
@@ -28,10 +29,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
+    fontSize: { xs: "0.75rem", sm: "0.9rem" }, // Smaller on mobile
+    padding: { xs: "8px", sm: "16px" }, // Reduced padding on mobile
+    textAlign: "center",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    textAlign: "center", // Center text horizontally
+    fontSize: { xs: "0.7rem", sm: "0.875rem" }, // Adjust text size
+    padding: { xs: "6px", sm: "16px" }, // Reduced padding
+    textAlign: "center",
   },
 }));
 
@@ -39,7 +44,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // Hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
@@ -47,8 +51,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export const Expense = () => {
   const [expenses, setExpenses] = React.useState([]);
-  const { isLoading, setIsLoading } = useLoading(); // Access loading state from context
-
+  const { isLoading, setIsLoading } = useLoading();
   const [open, setOpen] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
@@ -59,8 +62,14 @@ export const Expense = () => {
     description: "",
     date: "",
   });
-
   const [isAddingExpense, setisAddingExpense] = React.useState(false);
+  const [message, setMessage] = React.useState({ text: "", severity: "" });
+  const [categories, setCategories] = React.useState([]);
+  const [selectedCategory, setSelectedCategory] = React.useState("");
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const handleOpenEdit = (expense) => {
     setEditData({
       id: expense.id,
@@ -77,9 +86,7 @@ export const Expense = () => {
   };
 
   const handleOpenDelete = (expense) => {
-    setEditData({
-      id: expense.id,
-    });
+    setEditData({ id: expense.id });
     setOpenDelete(true);
   };
   const handleCloseDelete = () => {
@@ -87,35 +94,25 @@ export const Expense = () => {
     setOpenDelete(false);
   };
 
-  const [message, setMessage] = React.useState({
-    text: "",
-    severity: "",
-  });
-  const [categories, setCategories] = React.useState([]);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const clearMessage = () => {
-    setMessage({
-      severity: "",
-      text: "",
-    });
+    setMessage({ severity: "", text: "" });
   };
 
   const getAllExpenses = async (categoryId = null) => {
     try {
-      setIsLoading(true); // Hide loading spinner
+      setIsLoading(true);
       const response = await getExpenses(categoryId);
-      setExpenses(response.data); // Assuming response.data contains the array of expenses
+      setExpenses(response.data);
     } catch (error) {
       throw new Error(error.message);
     } finally {
-      setIsLoading(false); // Hide loading spinner
+      setIsLoading(false);
     }
   };
 
   const getCategories = async () => {
     try {
-      setIsLoading(true); // Hide loading spinner
+      setIsLoading(true);
       const response = await getCategory();
       if (response.status === 200) {
         setCategories(response.data);
@@ -123,7 +120,7 @@ export const Expense = () => {
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
-      setIsLoading(false); // Hide loading spinner
+      setIsLoading(false);
     }
   };
 
@@ -132,15 +129,11 @@ export const Expense = () => {
     getCategories();
   }, []);
 
-  const [selectedCategory, setSelectedCategory] = React.useState("");
-
   const handleFilter = (selectCategory) => {
-    console.log(selectCategory);
     setSelectedCategory(selectCategory);
-    getAllExpenses(selectCategory); // Fetch filtered expenses
+    getAllExpenses(selectCategory);
   };
 
-  // Calculate remaining budget dynamically
   const calculateRemainingBudget = (category) => {
     const categoryExpenses = expenses.filter(
       (expense) => expense.category.id === category.id
@@ -153,149 +146,188 @@ export const Expense = () => {
   };
 
   if (isLoading) {
-    return <Loading />; // Show loading spinner if data is being fetched
+    return <Loading />;
   }
+
   return (
-    <TableContainer component={Paper}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, maxWidth: "1200px", mx: "auto" }}>
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
-          margin: "20px",
+          alignItems: { xs: "flex-start", sm: "center" },
+          mb: 2,
+          gap: { xs: 1, sm: 2 },
         }}
       >
-        <h1 style={{ margin: 0, fontFamily: "'Rowdies', sans-serif" }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontFamily: "'Rowdies', sans-serif",
+            fontSize: { xs: "1.5rem", sm: "2rem" },
+            m: 0,
+          }}
+        >
           Expense Dashboard
-        </h1>
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-            <InputLabel id="demo-simple-select-label">Category</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={selectedCategory}
-              label="Category"
-              onChange={(e) => handleFilter(e.target.value)} // Pass selected value
-            >
-              {categories.map((category) => (
-                <MenuItem key={category.id} value={category.id}>
-                  {category.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Button variant="contained" color="primary" onClick={handleOpen}>
+        </Typography>
+        <FormControl
+          variant="standard"
+          sx={{ minWidth: { xs: 100, sm: 120 }, m: 1 }}
+        >
+          <InputLabel id="category-select-label">Category</InputLabel>
+          <Select
+            labelId="category-select-label"
+            id="category-select"
+            value={selectedCategory}
+            label="Category"
+            onChange={(e) => handleFilter(e.target.value)}
+            sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+          >
+            <MenuItem value="">
+              <em>All</em>
+            </MenuItem>
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpen}
+          size="small"
+          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+        >
           Add Expense
         </Button>
-        <FlashMessage
-          severity={message.severity}
-          text={message.text}
-          clearMessage={clearMessage}
-        />
-
-        {/* Reusable Modal */}
-        <ModalDialog open={open} onClose={handleClose} title="Add Expense">
-          <AddExpenseForm
-            onClose={handleClose}
-            setMessage={setMessage}
-            refreshExpenses={getAllExpenses}
-            categories={categories}
-            setisAddingExpense={setisAddingExpense}
-            isAddingExpense={isAddingExpense}
-          />
-        </ModalDialog>
-
-        <ModalDialog
-          open={openEdit}
-          onClose={handleCloseEdit}
-          title="Edit Expense"
-        >
-          <AddExpenseForm
-            onClose={handleCloseEdit}
-            setMessage={setMessage}
-            refreshExpenses={getAllExpenses}
-            categories={categories}
-            editData={editData}
-            setisAddingExpense={setisAddingExpense}
-            isAddingExpense={isAddingExpense}
-          />
-        </ModalDialog>
-
-        <ModalDialog open={openDelete} onClose={handleCloseDelete} title="">
-          <DeleteForm
-            onClose={handleCloseDelete}
-            setMessage={setMessage}
-            refetch={getAllExpenses}
-            deleteId={editData.id}
-            title="Expense"
-          />
-        </ModalDialog>
       </Box>
+
+      <FlashMessage
+        severity={message.severity}
+        text={message.text}
+        clearMessage={clearMessage}
+      />
+
+      <ModalDialog open={open} onClose={handleClose} title="Add Expense">
+        <AddExpenseForm
+          onClose={handleClose}
+          setMessage={setMessage}
+          refreshExpenses={getAllExpenses}
+          categories={categories}
+          setisAddingExpense={setisAddingExpense}
+          isAddingExpense={isAddingExpense}
+        />
+      </ModalDialog>
+
+      <ModalDialog open={openEdit} onClose={handleCloseEdit} title="Edit Expense">
+        <AddExpenseForm
+          onClose={handleCloseEdit}
+          setMessage={setMessage}
+          refreshExpenses={getAllExpenses}
+          categories={categories}
+          editData={editData}
+          setisAddingExpense={setisAddingExpense}
+          isAddingExpense={isAddingExpense}
+        />
+      </ModalDialog>
+
+      <ModalDialog open={openDelete} onClose={handleCloseDelete} title="">
+        <DeleteForm
+          onClose={handleCloseDelete}
+          setMessage={setMessage}
+          refetch={getAllExpenses}
+          deleteId={editData.id}
+          title="Expense"
+        />
+      </ModalDialog>
+
       {expenses.length === 0 ? (
-        <p style={{ textAlign: "center", margin: "20px 0" }}>
+        <Typography
+          sx={{
+            textAlign: "center",
+            my: 2,
+            fontWeight: "bold",
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+          }}
+        >
           No expenses found.
-        </p>
+        </Typography>
       ) : (
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">ID</StyledTableCell>
-              <StyledTableCell align="center">Category</StyledTableCell>
-              <StyledTableCell align="center">Description</StyledTableCell>
-              <StyledTableCell align="center">Amount</StyledTableCell>
-              <StyledTableCell align="center">Created Date</StyledTableCell>
-              <StyledTableCell align="center">Budget Allocated</StyledTableCell>
-              <StyledTableCell align="center">Remaining Budget</StyledTableCell>
-              <StyledTableCell align="center">Actions</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {expenses.map((expense, index) => (
-              <StyledTableRow key={index}>
-                <StyledTableCell>{index + 1}</StyledTableCell>
-                <StyledTableCell>{expense.category.name}</StyledTableCell>
-                <StyledTableCell>{expense.description}</StyledTableCell>
-                <StyledTableCell>{expense.amount}</StyledTableCell>
-                <StyledTableCell>{expense.created_at}</StyledTableCell>
-                <StyledTableCell>
-                  {expense.category?.budget?.amount}
+        <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+          <Table sx={{ minWidth: { xs: "auto", sm: 700 } }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>ID</StyledTableCell>
+                <StyledTableCell>Category</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Description
                 </StyledTableCell>
-                <StyledTableCell
-                  sx={{
-                    margin: 0,
-                    color:
-                      calculateRemainingBudget(expense.category) < 0
-                        ? "red"
-                        : "inherit",
-                  }}
-                >
-                  {calculateRemainingBudget(expense.category)}
+                <StyledTableCell>Amount</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Created Date
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginRight: "10px" }}
-                    onClick={() => handleOpenEdit(expense)}
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Budget Allocated
+                </StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Remaining Budget
+                </StyledTableCell>
+                <StyledTableCell>Actions</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {expenses.map((expense, index) => (
+                <StyledTableRow key={index}>
+                  <StyledTableCell>{index + 1}</StyledTableCell>
+                  <StyledTableCell>{expense.category.name}</StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {expense.description}
+                  </StyledTableCell>
+                  <StyledTableCell>{expense.amount}</StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {expense.created_at}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {expense.category?.budget?.amount}
+                  </StyledTableCell>
+                  <StyledTableCell
+                    sx={{
+                      display: { xs: "none", md: "table-cell" },
+                      color: calculateRemainingBudget(expense.category) < 0 ? "red" : "inherit",
+                    }}
                   >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleOpenDelete(expense)}
-                  >
-                    Delete
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
+                    {calculateRemainingBudget(expense.category)}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleOpenEdit(expense)}
+                      sx={{ mr: { xs: 0, sm: 1 }, mb: { xs: 1, sm: 0 }, fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleOpenDelete(expense)}
+                      sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                    >
+                      Delete
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </TableContainer>
+    </Box>
   );
 };
