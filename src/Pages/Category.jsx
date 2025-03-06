@@ -199,9 +199,9 @@ export const Category = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {categories.map((category) => (
+              {categories.map((category,index) => (
                 <StyledTableRow key={category.id}>
-                  <StyledTableCell>{category.id}</StyledTableCell>
+                  <StyledTableCell>{index + 1}</StyledTableCell>
                   <StyledTableCell>
                     <Link
                       to="/app/category-details"

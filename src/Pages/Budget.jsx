@@ -254,9 +254,9 @@ export const Budget = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {budget.map((b) => (
+              {budget.map((b,index) => (
                 <StyledTableRow key={b.id}>
-                  <StyledTableCell>{b.id}</StyledTableCell>
+                  <StyledTableCell>{index + 1}</StyledTableCell>
                   <StyledTableCell>{b.category.name}</StyledTableCell>
                   <StyledTableCell>{b.amount}</StyledTableCell>
                   <StyledTableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
