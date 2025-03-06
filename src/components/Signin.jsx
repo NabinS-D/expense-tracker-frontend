@@ -110,32 +110,41 @@ export const Signin = () => {
         gutterBottom
         sx={{
           fontFamily: "'Honk', sans-serif",
-          fontSize: "60px",
+          fontSize: { xs: "40px", sm: "50px", md: "60px" }, // Responsive font size
+          mt: { xs: 2, sm: 3 }, // Adjust margin-top for smaller screens
         }}
       >
         Expense Tracker
       </Typography>
       <Box
         sx={{
-          width: 400,
-          margin: "50px auto",
-          padding: 3,
+          width: { xs: "90%", sm: 400, md: 450 }, // Responsive width
+          maxWidth: "100%", // Prevent overflow
+          margin: "0 auto", // Center horizontally
+          padding: { xs: 2, sm: 3 }, // Responsive padding
           borderRadius: 2,
           backgroundColor: "skyblue",
           border: "0px solid #3f51b5",
-          boxShadow:
-            "0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15)",
+          boxShadow: {
+            xs: "0 2px 4px rgba(0, 0, 0, 0.2)", // Lighter shadow on mobile
+            sm: "0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15)", // Full shadow on larger screens
+          },
           transform: "translateY(-2px)",
           transition: "all 0.3s ease-in-out",
           "&:hover": {
-            transform: "translateY(-4px)",
-            boxShadow:
-              "0 8px 16px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.15)",
+            transform: { sm: "translateY(-4px)" }, // Hover effect only on larger screens
+            boxShadow: {
+              sm: "0 8px 16px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.15)",
+            },
           },
+          mt: { xs: 2, sm: 5 }, // Responsive top margin
         }}
       >
         <Typography
-          sx={{ fontFamily: "Rowdies, cursive" }}
+          sx={{
+            fontFamily: "Rowdies, cursive",
+            fontSize: { xs: "24px", sm: "28px", md: "32px" }, // Responsive font size
+          }}
           variant="h4"
           align="center"
           gutterBottom
@@ -154,6 +163,11 @@ export const Signin = () => {
             required
             onChange={handleInput}
             value={userDetails.email}
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "14px", sm: "16px" }, // Responsive input text size
+              },
+            }}
           />
 
           <TextField
@@ -167,6 +181,11 @@ export const Signin = () => {
             required
             onChange={handleInput}
             value={userDetails.password}
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "14px", sm: "16px" }, // Responsive input text size
+              },
+            }}
           />
 
           <Button
@@ -174,22 +193,35 @@ export const Signin = () => {
             color="primary"
             type="submit"
             fullWidth
-            className=" !bg-green-500 !text-white font-bold"
-            sx={{ mt: 2 }}
+            className="!bg-green-500 !text-white font-bold"
+            sx={{
+              mt: 2,
+              py: { xs: 1, sm: 1.5 }, // Responsive padding
+              fontSize: { xs: "14px", sm: "16px" }, // Responsive button text size
+            }}
             disabled={isSubmitting}
           >
             {isSubmitting ? "Logging in..." : "Login"}
           </Button>
         </form>
-        <div className="flex justify-center mt-2">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mt: 2,
+            flexDirection: { xs: "column", sm: "row" }, // Stack on mobile, row on larger screens
+            textAlign: { xs: "center", sm: "left" }, // Center text on mobile
+          }}
+        >
           <a
             href="/register"
             className="text-blue-500 hover:focus-visible: font-bold"
+            style={{ fontSize: "clamp(12px, 4vw, 16px)" }} // Responsive font size with clamp
           >
             Don't have an account?{" "}
             <span className="text-fuchsia-500">Sign Up</span>
           </a>
-        </div>
+        </Box>
 
         <FlashMessage
           severity={message.severity}
